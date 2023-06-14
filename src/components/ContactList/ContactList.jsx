@@ -1,15 +1,25 @@
-import { nanoid } from 'nanoid';
-import PropTypes from 'prop-types';
 import { List, Button, Item } from './ContactList.styled';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteContact } from 'redux/contactsSlice';
 
-export const Contactlist = ({ contacts, filter, handleDelete }) => {
-  const filterName = contacts.filter(contact =>
+export const Contactlist = () => {
+  const dispatch = useDispatch();
+  const {
+    contacts: { contacts },
+  } = useSelector(state => state);
+  const { filter } = useSelector(state => state);
+  const filterName = contacts?.filter(contact =>
     contact.name.toLowerCase().includes(filter.toLowerCase())
   );
+
+  const handleDelete = id => {
+    dispatch(deleteContact(id));
+  };
+
   return (
     <List>
-      {filterName.map(contact => (
-        <Item key={nanoid()}>
+      {filterName?.map(contact => (
+        <Item key={contact.id}>
           {contact.name}: {contact.number}
           <Button
             type="button"
@@ -23,13 +33,3 @@ export const Contactlist = ({ contacts, filter, handleDelete }) => {
     </List>
   );
 };
-
-Contactlist.propTypes = {
-  handleDelete: PropTypes.func.isRequired,
-  filter: PropTypes.string.isRequired,
-  contacts: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    number: PropTypes.string,
-  }))
-}
